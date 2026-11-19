@@ -1,42 +1,75 @@
 # Customer Retention & Segmentation Analytics
 
-## Project Overview
+Exploratory analysis and **behavior-based customer segmentation** of 3,900 shopping customers. The project examines spending, purchase history, self-reported purchase frequency, and subscription status to develop actionable loyalty insights.
 
-This project focuses on analyzing customer purchasing behavior, identifying meaningful customer segments, and understanding factors associated with customer loyalty and engagement.
+> **Scope:** This dataset is a customer snapshot, not a dated transaction log. The project studies *retention indicators*, not observed retention/churn rates. It does **not** calculate true RFM recency, customer lifetime value, or cohort retention.
 
-Using a dataset of 3,900 customer records, the project applies Python-based data analysis techniques to uncover purchasing trends, spending patterns, subscription behavior, and customer engagement levels.
+## Dataset
 
-The analysis uses data cleaning, Exploratory Data Analysis (EDA), behavioral customer segmentation, and data visualization to generate actionable business insights.
+- Source: `data/raw/Dataset.csv` (provided project dataset)
+- Shape: 3,900 rows × 18 columns
+- Unit of observation: one customer per row
+- Fields include demographics, item/category, observed purchase amount, subscription status, previous purchases, and reported purchase frequency.
+- 37 missing review ratings are imputed with the median for analysis.
 
-## Project Objectives
+## Workflow
 
-- Analyze customer demographics and purchasing behavior.
-- Identify spending patterns and popular product categories.
-- Segment customers based on spending, previous purchases, and purchase frequency.
-- Examine customer loyalty indicators and subscription behavior.
-- Identify opportunities to improve customer engagement and retention.
-- Provide data-driven recommendations for marketing strategies.
+1. Inspect source columns, missingness, and duplicates.
+2. Clean field names and impute missing review ratings.
+3. Explore customer spending and product category distributions.
+4. Convert purchase-frequency labels to a frequency proxy.
+5. Score spending, previous purchases, and frequency in quartiles (1–4 each).
+6. Sum scores (3–12) and assign **Low engagement (3–5)**, **Developing (6–8)**, **High engagement (9–12)**.
+7. Compare subscription rates and purchasing patterns across segments.
+8. Review recommendations and methodological limitations.
 
-## Tools & Technologies
+## Run locally
 
-- **Python:** Data analysis and processing
-- **Pandas:** Data cleaning and manipulation
-- **NumPy:** Numerical operations
-- **Matplotlib:** Data visualization
-- **Jupyter Notebook:** Interactive analysis
-- **VS Code:** Development environment
-- **GitHub:** Version control and project documentation
+```bash
+python -m venv .venv
+# macOS/Linux:
+source .venv/bin/activate
+# Windows PowerShell:
+# .venv\\Scripts\\Activate.ps1
+pip install -r requirements.txt
+python src/analysis.py
+jupyter notebook notebooks/customer_analysis.ipynb
+```
 
-## Key Findings
+Run `python src/analysis.py` from the repository root or any directory; the script resolves paths relative to itself. Generated tables are in `data/processed/`, plots and findings in `reports/`.
 
-- Analyzed 3,900 customer records across multiple product categories.
-- Identified three customer engagement segments: Low Engagement, Developing, and High Engagement.
-- Examined customer spending, purchase frequency, and subscription patterns.
-- Generated visualizations to compare customer segments and purchasing behavior.
-- Developed recommendations for targeted marketing, customer engagement, and loyalty initiatives.
+## Results
 
-## Business Impact
+See [analysis findings](reports/findings.md) for computed segment counts, metrics, figures, and interpretation.
 
-This project demonstrates how customer analytics can support business decisions by identifying high-engagement customers, highlighting opportunities to improve customer relationships, and enabling more targeted marketing strategies.
+![Customer segments](reports/figures/segment_sizes.png)
 
-**Note:** Because the dataset does not include dated transaction histories, the project analyzes retention-related behavioral indicators rather than calculating actual churn or cohort retention rates.
+## Repository layout
+
+```text
+customer-retention-segmentation/
+├── data/
+│   ├── raw/Dataset.csv
+│   └── processed/
+├── notebooks/customer_analysis.ipynb
+├── src/analysis.py
+├── reports/
+│   ├── findings.md
+│   └── figures/
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+## Ethical and analytical caveats
+
+- Spending is the amount observed in the row, not lifetime spend.
+- Segments are descriptive heuristics, not a churn classifier.
+- Frequency labels are approximate; different labels can map to the same annualized proxy.
+- Quartile rank tie-breaking is deterministic but can split equal values.
+- No dates, follow-up outcomes, or observation window exist to calculate actual retention or churn.
+- Review data rights and permissions before publishing the raw dataset publicly.
+
+## Potential next steps
+
+Obtain timestamped transactions and customer join dates to compute real retention/cohorts and recency; evaluate segmentation stability and campaign outcomes.
